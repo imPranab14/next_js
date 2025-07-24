@@ -1,5 +1,7 @@
 import React from "react";
 import axios from "axios";
+//Import Module CSS
+import styles from "./style.module.css"
 
 async function ServerHomePage() {
   const response = await axios.get("https://dummyjson.com/users");
@@ -11,7 +13,7 @@ async function ServerHomePage() {
       <h1>Server-side Rendering (SSR) Home</h1>
       {data.map((ele)=>{
         return (
-            <li key={ele?.id}>{ele?.firstName}</li>
+            <li key={ele?.id} className={styles.text}>{ele?.firstName}</li>
         )
       })}
     </div>
