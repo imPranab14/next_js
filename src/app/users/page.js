@@ -40,7 +40,7 @@ function UserPage() {
 
   return (
     <>
-      <h1>UserPage (Client Side Data Fetching)</h1>
+      <h1 className="text-xl">UserPage (Client Side Data Fetching)</h1>
       {user?.map((ele) => {
         return <li key={ele.id}>{ele.firstName}</li>;
       })}
