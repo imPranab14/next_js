@@ -1,6 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "./components/SessionProvider";
+import Navbar from "./Navbar";
+
 
 export const metadata = {
   title: "Create Next App",
@@ -11,7 +13,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
+        {/* <Navbar/> */}
         <AuthProvider>
+           <Navbar/> 
           {children}
         </AuthProvider>
       </body>
