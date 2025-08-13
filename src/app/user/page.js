@@ -6,17 +6,20 @@ import { useForm } from "react-hook-form";
 export default function index() {
   const [showPassword, setShowPassword] = useState(false);
   const [countryApiData, setCountryApiData] = useState([]);
+  const [statesData,setStatesData]=useState([])
   const {
     register,
     handleSubmit,
     getValues,
+    watch,
     formState: { errors },
   } = useForm();
 
   function onSubmit(value) {
     console.log("submit_from_data", value);
   }
-
+  const countryName = watch("countryName");
+  
   //Call Api
   async function countryAPi() {
     try {
@@ -31,10 +34,30 @@ export default function index() {
     }
   }
 
+  async function statesApi(value) {
+    console.log("value", value);
+    try {
+      const response = await axios.post(
+        "https://countriesnow.space/api/v0.1/countries/states",
+        {
+          country: `${value}`,
+        }
+      );
+      if (response?.status === 200) {
+        setStatesData(response?.data.data.states);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   //Api Call useEffect Function
   useEffect(() => {
     countryAPi();
-  }, []);
+    statesApi(countryName);
+  }, [countryName]);
+
+  console.log("statesData",statesData);
 
   return (
     <>
@@ -57,9 +80,9 @@ export default function index() {
                   `http://localhost:8085/check-email?email=${value}`
                 );
                 if (response.status === 200) return true;
-                 return "emil if already exits";
+                return "Email already exits";
               } catch {
-                return "Error checking email";
+                return "Error Checking email";
               }
             },
           })}
@@ -116,6 +139,15 @@ export default function index() {
           {countryApiData.map((e, index) => (
             <option key={index} value={e?.name.common}>
               {e?.name.common}
+            </option>
+          ))}
+        </select>
+
+         {/* Country Dropdown */}
+        <select {...register("statesName")}>
+          {statesData.map((e, index) => (
+            <option key={index} value={e?.name}>
+              {e?.name}
             </option>
           ))}
         </select>
