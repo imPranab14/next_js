@@ -1,10 +1,11 @@
 "use client";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function index() {
-  const [showPassword,setShowPassword]=useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [countryApiData, setCountryApiData] = useState([]);
   const {
     register,
     handleSubmit,
@@ -13,11 +14,27 @@ export default function index() {
   } = useForm();
 
   function onSubmit(value) {
-    console.log(value);
+    console.log("submit_from_data", value);
   }
 
-  console.log("error", errors);
-  //console.log("showPassword",showPassword);
+  //Call Api
+  async function countryAPi() {
+    try {
+      const response = await axios.get(
+        "https://restcountries.com/v3.1/all?fields=name,cca2"
+      );
+      if (response?.status === 200) {
+        setCountryApiData(response?.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  //Api Call useEffect Function
+  useEffect(() => {
+    countryAPi();
+  }, []);
 
   return (
     <>
@@ -39,9 +56,8 @@ export default function index() {
                 const response = await axios.post(
                   `http://localhost:8085/check-email?email=${value}`
                 );
-                console.log("response", response);
-                if (response.status === 200) return "emil id available";
-                else return "emil if already exits";
+                if (response.status === 200) return true;
+                 return "emil if already exits";
               } catch {
                 return "Error checking email";
               }
@@ -52,21 +68,26 @@ export default function index() {
         />
         {errors.email && errors.email.message}
         <div className="flex">
-        <input
-          {...register("password",{
-            required: {value:true ,message:"password is required"},
-            minLength:{value:8 ,message:"password must be at least 8 characters"},
-          })}
-          type={showPassword ? "text" : "password"}
-          placeholder="Enter Your Password"
-        />
-        <button type="button" onClick={(e)=> setShowPassword(!showPassword)}>{showPassword? "Show": "Hide"}</button>
+          <input
+            {...register("password", {
+              required: { value: true, message: "password is required" },
+              minLength: {
+                value: 8,
+                message: "password must be at least 8 characters",
+              },
+            })}
+            type={showPassword ? "text" : "password"}
+            placeholder="Enter Your Password"
+          />
+          <button type="button" onClick={(e) => setShowPassword(!showPassword)}>
+            {showPassword ? "Show" : "Hide"}
+          </button>
         </div>
         {errors.password && errors.password.message}
         <input
           {...register("age", {
             required: { value: true, message: "age is required" },
-            validate: (value) => value > 18 ? true : "you must be 18"
+            validate: (value) => (value > 18 ? true : "you must be 18"),
           })}
           type="number"
           placeholder="Enter Your Age"
@@ -90,9 +111,15 @@ export default function index() {
           </div>
         </div>
 
-      <select>
-        <option value="volvo">Volvo</option>
-      </select>
+        {/* Country Dropdown */}
+        <select {...register("countryName")}>
+          {countryApiData.map((e, index) => (
+            <option key={index} value={e?.name.common}>
+              {e?.name.common}
+            </option>
+          ))}
+        </select>
+
         <input type="submit" />
       </form>
     </>
